@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ta" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConnectPulse - Social Media Web App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Custom scrollbar for clean visual appeal */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 transition-colors duration-200 min-h-full flex flex-col">
+
+    <!-- Top Navigation Header -->
+    <header class="sticky top-0 z-40 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-700">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Brand Name -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('feed')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+                        <i class="fa-solid font-bold fa-bolt text-xl"></i>
+                    </div>
+                    <span class="text-xl font-bold bg-gradient-to-r from-brand-600 to-indigo-400 bg-clip-text text-transparent">ConnectPulse</span>
+                </div>
+
+                <!-- Global Search Bar -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="searchInput" placeholder="Search posts, hashtags, people..." 
+                            class="w-full pl-10 pr-4 py-2 bg-slate-100 dark:bg-slate-700/60 border-0 rounded-full text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                    </div>
+                </div>
+
+                <!-- Header Actions -->
+                <div class="flex items-center space-x-3 sm:space-x-4">
+                    <!-- Notification Bell -->
+                    <button class="relative p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-rose-500 rounded-full ring-2 ring-white dark:ring-slate-800"></span>
+                    </button>
+
+                    <!-- Dark / Light Mode Toggle Switch -->
+                    <button id="themeToggle" onclick="toggleTheme()" class="p-2 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition" title="Toggle Theme">
+                        <i id="themeIcon" class="fa-solid fa-moon text-xl"></i>
+                    </button>
+
+                    <!-- User Profile Quick Avatar Button -->
+                    <button onclick="switchTab('profile')" class="flex items-center space-x-2 p-1 rounded-full border-2 border-brand-500/50 hover:border-brand-500 transition">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="User Profile" class="w-8 h-8 rounded-full object-cover">
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT SIDEBAR: Navigation Menu -->
+        <aside class="hidden lg:block lg:col-span-3 space-y-4">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-700/60 sticky top-22">
+                <!-- User Quick Info -->
+                <div class="flex items-center space-x-3 p-2 mb-4">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Kavitha profile" class="w-12 h-12 rounded-full object-cover">
+                    <div>
+                        <h4 class="font-semibold text-slate-900 dark:text-white text-base">Kavitha Raj</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">@kavitha_dev</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="space-y-1">
+                    <button id="navHome" onclick="switchTab('feed')" class="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400">
+                        <i class="fa-solid fa-house text-lg w-6"></i>
+                        <span>Home Feed</span>
+                    </button>
+                    <button id="navProfile" onclick="switchTab('profile')" class="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                        <i class="fa-regular fa-user text-lg w-6"></i>
+                        <span>Profile</span>
+                    </button>
+                    <button class="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                        <i class="fa-regular fa-bookmark text-lg w-6"></i>
+                        <span>Bookmarks</span>
+                    </button>
+                    <button class="w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition">
+                        <i class="fa-regular fa-envelope text-lg w-6"></i>
+                        <span>Messages</span>
+                        <span class="ml-auto px-2 py-0.5 text-xs bg-brand-500 text-white font-bold rounded-full">3</span>
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- CENTER AREA: Feed & Post Creation & Profile Views -->
+        <main class="lg:col-span-6 space-y-6">
+
+            <!-- MAIN FEED VIEW CONTAINER -->
+            <div id="feedView" class="space-y-6">
+
+                <!-- 1. Stories / Status Bar -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-700/60 overflow-hidden">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 px-1">Stories</h3>
+                    <div class="flex space-x-4 overflow-x-auto pb-2 scrollbar-none" id="storiesContainer">
+                        <!-- Add Story Item -->
+                        <div onclick="showToast('Story creation feature opened!')" class="flex flex-col items-center flex-shrink-0 cursor-pointer group">
+                            <div class="w-16 h-16 rounded-full border-2 border-dashed border-brand-400 flex items-center justify-center bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-400 group-hover:scale-105 transition">
+                                <i class="fa-solid fa-plus text-xl"></i>
+                            </div>
+                            <span class="text-xs mt-1.5 text-slate-600 dark:text-slate-400">Your Story</span>
+                        </div>
+                        <!-- Story items will be populated by JS -->
+                    </div>
+                </div>
+
+                <!-- 2. Post Creation Widget -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-700/60">
+                    <div class="flex space-x-3">
+                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+                        <div class="flex-1">
+                            <textarea id="postInput" rows="3" placeholder="What's happening? Share your thoughts..." 
+                                class="w-full bg-slate-50 dark:bg-slate-700/40 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
+                            
+                            <!-- Attached Image Preview Container -->
+                            <div id="imagePreviewContainer" class="hidden relative mt-2 rounded-xl overflow-hidden max-h-48">
+                                <img id="imagePreview" src="" alt="Post Attachment" class="w-full object-cover">
+                                <button onclick="removeAttachedImage()" class="absolute top-2 right-2 p-1 bg-black/60 text-white rounded-full hover:bg-black/80">
+                                    <i class="fa-solid fa-xmark text-sm w-5 h-5 flex items-center justify-center"></i>
+                                </button>
+                            </div>
+
+                            <!-- Controls Toolbar -->
+                            <div class="flex items-center justify-between mt-3 pt-3 border-t border-slate-100 dark:border-slate-700/50">
+                                <div class="flex items-center space-x-2 text-slate-500 dark:text-slate-400">
+                                    <!-- Attach Image Simulated Button -->
+                                    <button onclick="triggerImageSelect()" class="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg text-emerald-500 transition" title="Attach Image">
+                                        <i class="fa-regular fa-image text-lg"></i>
+                                    </button>
+                                    <!-- Select Tag Modal/Button -->
+                                    <select id="postTag" class="bg-slate-100 dark:bg-slate-700 border-0 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500 text-slate-700 dark:text-slate-300">
+                                        <option value="General">#General</option>
+                                        <option value="Tech">#Tech</option>
+                                        <option value="Design">#Design</option>
+                                        <option value="Lifestyle">#Lifestyle</option>
+                                        <option value="Coding">#Coding</option>
+                                    </select>
+                                </div>
+                                <button onclick="createNewPost()" class="px-5 py-2 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-brand-500/20 transition">
+                                    Post <i class="fa-solid fa-paper-plane ml-1 text-xs"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Posts Stream Feed -->
+                <div id="postsFeed" class="space-y-6">
+                    <!-- Dynamic Posts rendered via JavaScript -->
+                </div>
+            </div>
+
+            <!-- PROFILE VIEW CONTAINER (Initially Hidden) -->
+            <div id="profileView" class="hidden space-y-6">
+                <!-- User Profile Header Card -->
+                <div class="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-200/80 dark:border-slate-700/60">
+                    <!-- Banner -->
+                    <div class="h-36 bg-gradient-to-r from-brand-600 via-indigo-600 to-purple-600 relative"></div>
+                    
+                    <div class="px-6 pb-6 pt-0 relative">
+                        <!-- Avatar Profile -->
+                        <div class="flex justify-between items-end -mt-14 mb-4">
+                            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80" alt="Kavitha Avatar" 
+                                class="w-24 h-24 rounded-2xl object-cover ring-4 ring-white dark:ring-slate-800 shadow-md">
+                            <button onclick="showToast('Profile Editing feature enabled!')" class="px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                                Edit Profile
+                            </button>
+                        </div>
+
+                        <!-- Bio & Details -->
+                        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Kavitha Raj</h2>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">@kavitha_dev</p>
+                        <p class="mt-3 text-sm text-slate-700 dark:text-slate-300">
+                            Full-Stack Developer & UI Enthusiast 🚀 | Building modern web apps & exploring AI. ✨ Chennai, TN.
+                        </p>
+
+                        <!-- Stats Row -->
+                        <div class="flex space-x-6 mt-4 pt-4 border-t border-slate-100 dark:border-slate-700/60">
+                            <div>
+                                <span class="block text-base font-bold text-slate-900 dark:text-white" id="userPostCount">3</span>
+                                <span class="text-xs text-slate-500">Posts</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-bold text-slate-900 dark:text-white">1,420</span>
+                                <span class="text-xs text-slate-500">Followers</span>
+                            </div>
+                            <div>
+                                <span class="block text-base font-bold text-slate-900 dark:text-white">389</span>
+                                <span class="text-xs text-slate-500">Following</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Posts Heading -->
+                <h3 class="text-base font-bold text-slate-900 dark:text-white px-1">Your Posts</h3>
+                <div id="userPostsFeed" class="space-y-6">
+                    <!-- Filtered User posts rendered here -->
+                </div>
+            </div>
+
+        </main>
+
+        <!-- RIGHT SIDEBAR: Trending Topics & Suggestions -->
+        <aside class="hidden lg:block lg:col-span-3 space-y-6">
+
+            <!-- Trending Sidebar -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-700/60">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-slate-900 dark:text-white text-sm">Trending Hashtags</h3>
+                    <i class="fa-solid fa-arrow-trend-up text-brand-500 text-sm"></i>
+                </div>
+                <div class="space-y-3">
+                    <div class="p-2 hover:bg-slate-50 dark:hover:bg-slate-700/40 rounded-xl cursor-pointer transition" onclick="filterByTag('WebDev')">
+                        <p class="text-xs text-slate-400">Technology · Trending</p>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">#WebDev</p>
+                        <p class="text-xs text-slate-400">14.2k posts</p>
+                    </div>
+                    <div class="p-2 hover:bg-slate-50 dark:hover:bg-slate-700/40 rounded-xl cursor-pointer transition" onclick="filterByTag('ReactJS')">
+                        <p class="text-xs text-slate-400">Coding · Trending</p>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">#ReactJS</p>
+                        <p class="text-xs text-slate-400">9.8k posts</p>
+                    </div>
+                    <div class="p-2 hover:bg-slate-50 dark:hover:bg-slate-700/40 rounded-xl cursor-pointer transition" onclick="filterByTag('TamilTech')">
+                        <p class="text-xs text-slate-400">Regional · Trending</p>
+                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-200">#TamilTech</p>
+                        <p class="text-xs text-slate-400">5.4k posts</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Who to follow Sidebar -->
+            <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200/80 dark:border-slate-700/60">
+                <h3 class="font-bold text-slate-900 dark:text-white text-sm mb-3">Suggested Connections</h3>
+                <div class="space-y-3" id="suggestionsContainer">
+                    <!-- Rendered via JS -->
+                </div>
+            </div>
+
+        </aside>
+    </div>
+
+    <!-- STORY MODAL PREVIEW -->
+    <div id="storyModal" class="fixed inset-0 z-50 hidden bg-black/90 flex items-center justify-center p-4">
+        <button onclick="closeStoryModal()" class="absolute top-4 right-4 text-white hover:text-slate-300 text-2xl z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <div class="relative w-full max-w-sm h-[80vh] bg-slate-900 rounded-2xl overflow-hidden flex flex-col justify-between p-4 bg-cover bg-center" id="storyContent">
+            <!-- Progress Bar -->
+            <div class="w-full bg-white/30 h-1 rounded-full overflow-hidden">
+                <div id="storyProgress" class="bg-white h-full w-0 transition-all duration-3000 ease-linear"></div>
+            </div>
+            
+            <!-- User Detail -->
+            <div class="flex items-center space-x-3 mt-3 text-white">
+                <img id="storyUserAvatar" src="" class="w-9 h-9 rounded-full border-2 border-white object-cover">
+                <span id="storyUserName" class="font-semibold text-sm"></span>
+            </div>
+
+            <!-- Footer Comment Box -->
+            <div class="flex items-center space-x-2">
+                <input type="text" placeholder="Reply to story..." class="w-full px-4 py-2 bg-white/20 backdrop-blur-md rounded-full text-sm text-white placeholder-white/70 focus:outline-none">
+                <button onclick="showToast('Reply sent!')" class="p-2 text-white"><i class="fa-regular fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION CONTAINER -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white dark:bg-white dark:text-slate-900 px-4 py-3 rounded-xl shadow-lg text-sm font-medium flex items-center space-x-2 transition-all transform translate-y-2">
+        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-base"></i>
+        <span id="toastMessage">Action completed</span>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // --- DATA STORE ---
+        const currentUser = {
+            name: "Kavitha Raj",
+            handle: "@kavitha_dev",
+            avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+        };
+
+        const initialStories = [
+            { id: 1, name: "Arun Kumar", avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80", bg: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80" },
+            { id: 2, name: "Priya V", avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80", bg: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&auto=format&fit=crop&q=80" },
+            { id: 3, name: "Suresh Tech", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80", bg: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=600&auto=format&fit=crop&q=80" }
+        ];
+
+        let posts = [
+            {
+                id: 101,
+                author: "Kavitha Raj",
+                handle: "@kavitha_dev",
+                avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+                timestamp: "2 hours ago",
+                content: "Just launched my new web dashboard project built with Tailwind and Javascript! Super excited to share it with everyone. 🚀✨",
+                image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&auto=format&fit=crop&q=80",
+                tag: "Coding",
+                likes: 24,
+                liked: false,
+                comments: [
+                    { name: "Arun Kumar", text: "Looks fantastic! Clean design 🔥" }
+                ]
+            },
+            {
+                id: 102,
+                author: "Priya V",
+                handle: "@priya_design",
+                avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80",
+                timestamp: "4 hours ago",
+                content: "Morning coffee and UI prototyping! What tools do you guys prefer for wireframing in 2026? ☕🎨",
+                image: null,
+                tag: "Design",
+                likes: 42,
+                liked: true,
+                comments: [
+                    { name: "Kavitha Raj", text: "Figma and Penpot are my daily drivers!" }
+                ]
+            }
+        ];
+
+        const suggestions = [
+            { name: "Tech Weekly", handle: "@tech_weekly", avatar: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150&auto=format&fit=crop&q=80" },
+            { name: "Dev Community", handle: "@dev_hub", avatar: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=150&auto=format&fit=crop&q=80" }
+        ];
+
+        let currentAttachedImage = null;
+
+        // --- RENDER FUNCTIONS ---
+
+        // Render Stories
+        function renderStories() {
+            const container = document.getElementById('storiesContainer');
+            const storyHTML = initialStories.map(s => `
+                <div onclick="openStoryModal('${s.name}', '${s.avatar}', '${s.bg}')" class="flex flex-col items-center flex-shrink-0 cursor-pointer group">
+                    <div class="w-16 h-16 rounded-full p-0.5 bg-gradient-to-tr from-amber-500 via-rose-500 to-brand-500 group-hover:scale-105 transition">
+                        <img src="${s.avatar}" class="w-full h-full rounded-full object-cover border-2 border-white dark:border-slate-800">
+                    </div>
+                    <span class="text-xs mt-1.5 text-slate-600 dark:text-slate-400 font-medium">${s.name.split(' ')[0]}</span>
+                </div>
+            `).join('');
+            container.innerHTML += storyHTML;
+        }
+
+        // Render Suggestions
+        function renderSuggestions() {
+            const container = document.getElementById('suggestionsContainer');
+            container.innerHTML = suggestions.map(s => `
+                <div class="flex items-center justify-between p-1">
+                    <div class="flex items-center space-x-2">
+                        <img src="${s.avatar}" class="w-9 h-9 rounded-full object-cover">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-200">${s.name}</p>
+                            <p class="text-[10px] text-slate-400">${s.handle}</p>
+                        </div>
+                    </div>
+                    <button onclick="toggleFollow(this)" class="px-3 py-1 bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-300 hover:bg-brand-100 font-semibold rounded-lg text-xs transition">
+                        Follow
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Render Feed Posts
+        function renderPosts(feedContainerId = 'postsFeed', filterUserOnly = false) {
+            const container = document.getElementById(feedContainerId);
+            const targetPosts = filterUserOnly ? posts.filter(p => p.handle === currentUser.handle) : posts;
+
+            if (targetPosts.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-slate-400 text-sm">No posts to display yet!</div>`;
+                return;
+            }
+
+            container.innerHTML = targetPosts.map(post => `
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm border border-slate-200/80 dark:border-slate-700/60 space-y-3">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <img src="${post.avatar}" alt="${post.author}" class="w-10 h-10 rounded-full object-cover">
+                            <div>
+                                <h4 class="font-semibold text-slate-900 dark:text-white text-sm">${post.author}</h4>
+                                <span class="text-xs text-slate-400">${post.handle} · ${post.timestamp}</span>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium rounded-full">
+                            #${post.tag}
+                        </span>
+                    </div>
+
+                    <!-- Content -->
+                    <p class="text-sm text-slate-700 dark:text-slate-200 leading-relaxed">${post.content}</p>
+
+                    <!-- Optional Attached Image -->
+                    ${post.image ? `
+                        <div class="rounded-xl overflow-hidden max-h-96">
+                            <img src="${post.image}" class="w-full h-full object-cover">
+                        </div>
+                    ` : ''}
+
+                    <!-- Action Bar -->
+                    <div class="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-700/50 text-slate-500 dark:text-slate-400 text-xs">
+                        <button onclick="toggleLike(${post.id})" class="flex items-center space-x-1.5 ${post.liked ? 'text-rose-500 font-semibold' : 'hover:text-rose-500'} transition">
+                            <i class="${post.liked ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
+                            <span>${post.likes}</span>
+                        </button>
+                        <button onclick="focusComment(${post.id})" class="flex items-center space-x-1.5 hover:text-brand-500 transition">
+                            <i class="fa-regular fa-comment text-base"></i>
+                            <span>${post.comments.length}</span>
+                        </button>
+                        <button onclick="sharePost(${post.id})" class="flex items-center space-x-1.5 hover:text-emerald-500 transition">
+                            <i class="fa-regular fa-share-from-square text-base"></i>
+                            <span>Share</span>
+                        </button>
+                    </div>
+
+                    <!-- Comments Section -->
+                    <div class="bg-slate-50 dark:bg-slate-700/30 rounded-xl p-3 space-y-2">
+                        <!-- Comment Input -->
+                        <div class="flex items-center space-x-2">
+                            <input type="text" id="comment-input-${post.id}" placeholder="Write a comment..." 
+                                class="flex-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1.5 text-xs text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-brand-500"
+                                onkeypress="if(event.key === 'Enter') addComment(${post.id})">
+                            <button onclick="addComment(${post.id})" class="p-1.5 text-brand-600 dark:text-brand-400 hover:bg-brand-50 rounded-lg text-xs font-semibold">
+                                Send
+                            </button>
+                        </div>
+                        
+                        <!-- List Comments -->
+                        <div class="space-y-1.5 pt-1">
+                            ${post.comments.map(c => `
+                                <div class="text-xs bg-white dark:bg-slate-800/80 p-2 rounded-lg border border-slate-100 dark:border-slate-700/40">
+                                    <span class="font-semibold text-slate-800 dark:text-slate-200">${c.name}: </span>
+                                    <span class="text-slate-600 dark:text-slate-300">${c.text}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Update user post count stats
+            const userPosts = posts.filter(p => p.handle === currentUser.handle);
+            document.getElementById('userPostCount').innerText = userPosts.length;
+        }
+
+        // --- INTERACTION LOGIC ---
+
+        // Create New Post
+        function createNewPost() {
+            const input = document.getElementById('postInput');
+            const tagSelect = document.getElementById('postTag');
+            const text = input.value.trim();
+
+            if (!text && !currentAttachedImage) {
+                showToast("Please enter some text or attach an image!");
+                return;
+            }
+
+            const newPost = {
+                id: Date.now(),
+                author: currentUser.name,
+                handle: currentUser.handle,
+                avatar: currentUser.avatar,
+                timestamp: "Just now",
+                content: text,
+                image: currentAttachedImage,
+                tag: tagSelect.value,
+                likes: 0,
+                liked: false,
+                comments: []
+            };
+
+            posts.unshift(newPost);
+            input.value = "";
+            removeAttachedImage();
+            renderPosts();
+            showToast("Post published successfully!");
+        }
+
+        // Toggle Like
+        function toggleLike(postId) {
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.liked = !post.liked;
+                post.likes += post.liked ? 1 : -1;
+                renderPosts('postsFeed');
+                renderPosts('userPostsFeed', true);
+            }
+        }
+
+        // Add Comment
+        function addComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            const text = input.value.trim();
+            if (!text) return;
+
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.comments.push({ name: currentUser.name, text: text });
+                renderPosts('postsFeed');
+                renderPosts('userPostsFeed', true);
+                showToast("Comment added!");
+            }
+        }
+
+        function focusComment(postId) {
+            const input = document.getElementById(`comment-input-${postId}`);
+            if (input) input.focus();
+        }
+
+        function sharePost(postId) {
+            showToast("Post link copied to clipboard!");
+        }
+
+        // Simulated Image Attachment
+        function triggerImageSelect() {
+            const sampleImages = [
+                "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&auto=format&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
+                "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=800&auto=format&fit=crop&q=80"
+            ];
+            currentAttachedImage = sampleImages[Math.floor(Math.random() * sampleImages.length)];
+            
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImg = document.getElementById('imagePreview');
+            previewImg.src = currentAttachedImage;
+            previewContainer.classList.remove('hidden');
+        }
+
+        function removeAttachedImage() {
+            currentAttachedImage = null;
+            document.getElementById('imagePreviewContainer').classList.add('hidden');
+        }
+
+        // Story Modal Controls
+        function openStoryModal(name, avatar, bg) {
+            const modal = document.getElementById('storyModal');
+            document.getElementById('storyUserName').innerText = name;
+            document.getElementById('storyUserAvatar').src = avatar;
+            document.getElementById('storyContent').style.backgroundImage = `url('${bg}')`;
+            modal.classList.remove('hidden');
+            
+            // Trigger simple progress animation
+            const progress = document.getElementById('storyProgress');
+            progress.style.width = '0%';
+            setTimeout(() => { progress.style.width = '100%'; }, 50);
+        }
+
+        function closeStoryModal() {
+            document.getElementById('storyModal').classList.add('hidden');
+        }
+
+        // Tab Navigation Switcher
+        function switchTab(tab) {
+            const feedView = document.getElementById('feedView');
+            const profileView = document.getElementById('profileView');
+            const navHome = document.getElementById('navHome');
+            const navProfile = document.getElementById('navProfile');
+
+            if (tab === 'feed') {
+                feedView.classList.remove('hidden');
+                profileView.classList.add('hidden');
+                navHome.className = "w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400";
+                navProfile.className = "w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition";
+                renderPosts('postsFeed');
+            } else if (tab === 'profile') {
+                feedView.classList.add('hidden');
+                profileView.classList.remove('hidden');
+                navProfile.className = "w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl bg-brand-50 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400";
+                navHome.className = "w-full flex items-center space-x-3 px-4 py-3 text-sm font-medium rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition";
+                renderPosts('userPostsFeed', true);
+            }
+        }
+
+        // Follow Button Toggle
+        function toggleFollow(btn) {
+            if (btn.innerText === "Follow") {
+                btn.innerText = "Following";
+                btn.className = "px-3 py-1 bg-slate-200 dark:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold rounded-lg text-xs transition";
+                showToast("Following user!");
+            } else {
+                btn.innerText = "Follow";
+                btn.className = "px-3 py-1 bg-brand-50 dark:bg-slate-700 text-brand-600 dark:text-brand-300 hover:bg-brand-100 font-semibold rounded-lg text-xs transition";
+            }
+        }
+
+        function filterByTag(tagName) {
+            showToast(`Filtering posts by #${tagName}`);
+        }
+
+        // Dark / Light Theme Toggle
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.className = "fa-solid fa-moon text-xl";
+            } else {
+                html.classList.add('dark');
+                icon.className = "fa-solid fa-sun text-xl text-amber-400";
+            }
+        }
+
+        // Toast Notification System
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // INIT APP
+        window.onload = function() {
+            renderStories();
+            renderSuggestions();
+            renderPosts('postsFeed');
+        };
+    </script>
+</body>
+</html>
